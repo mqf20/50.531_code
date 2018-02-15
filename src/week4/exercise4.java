@@ -2,14 +2,34 @@ package week4;
 
 import java.util.Calendar;
 
+/**
+ * Submission by FOO, Ming Qing (1003260, mingqing_foo@mymail.sutd.edu.sg),
+ * 
+ * The problem with the non-compliant code is: 
+ * 
+ * 
+ * The fix is to: 
+ * 
+ */
 public class exercise4 {
+  
+    /**
+     * Unit test
+     */
 	public static void main (String[] args) {
-		CalendarSubclass cal1 = new CalendarSubclass();
-		System.out.println(cal1);
-		CalendarSubclass cal2 = new CalendarSubclass();
-		System.out.println(cal2.after(cal1));
-		System.out.println(cal2.after(cal2));
-		System.out.println(cal1.after(cal2));
+	  
+        CalendarSubclass cal1 = new CalendarSubclass();
+        System.out.println(cal1);
+        CalendarSubclass cal2 = new CalendarSubclass();
+        System.out.println(cal2.after(cal1));
+        System.out.println(cal2.after(cal2));
+        System.out.println(cal1.after(cal2));
+
+		System.out.println(cal1.getTime());
+		System.out.println(cal1.hashCode());
+		System.out.println(cal2.getTime());
+		System.out.println(cal2.hashCode());
+
 	}
 }
 
