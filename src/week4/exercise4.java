@@ -1,6 +1,7 @@
 package week4;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * Submission by FOO, Ming Qing (1003260, mingqing_foo@mymail.sutd.edu.sg),
@@ -12,7 +13,9 @@ import java.util.Calendar;
  *   CalendarSubclass. This causes after() to return the wrong results.
  * 
  * The fix is to: 
- * - Implement CalendarSubclass's own comparison.
+ * - Use forwarding -- we take advantage of the compareTo() method provided by GregorianCalendar to 
+ * 	implement the after() logic in CalendarSubclass.
+ * - The limitation is that our approach would not work if the calendars compared to are not Gregorian.
  */
 public class exercise4 {
   
@@ -31,11 +34,9 @@ public class exercise4 {
         System.out.printf("cal2 is %s-%s-%s\n", cal2.get(Calendar.YEAR), cal2.get(Calendar.MONTH), 
             cal2.get(Calendar.DAY_OF_MONTH));
         
-        System.out.println("\n>> start of tests...\n");
-        
-//        System.out.println(cal2.after(cal1));  // true
+        System.out.println(cal2.after(cal1));  // true
         System.out.println(cal2.after(cal2));  // true
-//        System.out.println(cal1.after(cal2));  // prints *true* but should be *false*
+        System.out.println(cal1.after(cal2));  // *false*
 
 	}
 }
@@ -47,82 +48,34 @@ class CalendarSubclass extends Calendar {
 	    if (!(when instanceof Calendar)) {
 	      throw new IllegalArgumentException();
 	    }
-
-	    Calendar when_calendar = (Calendar) when;
-
-        System.out.printf("this is %s-%s-%s\n", this.get(Calendar.YEAR), this.get(Calendar.MONTH), 
-            this.get(Calendar.DAY_OF_MONTH));
-	    
-        System.out.printf("when_calendar is %s-%s-%s\n", when_calendar.get(Calendar.YEAR), 
-            when_calendar.get(Calendar.MONTH), when_calendar.get(Calendar.DAY_OF_MONTH));
-	    
-	    if (this.get(Calendar.YEAR) > when_calendar.get(Calendar.YEAR)) {
-	      return true;
-	    }
-
-	    if (this.get(Calendar.YEAR) < when_calendar.get(Calendar.YEAR)) {
-	      return false;
-	    }
-	    
-	    if (this.get(Calendar.MONTH) > when_calendar.get(Calendar.MONTH)) {
-	      return true;
-	    }
-
-	    if (this.get(Calendar.MONTH) < when_calendar.get(Calendar.MONTH)) {
-	      return false;
-	    }
-
-	    if (this.get(Calendar.DAY_OF_MONTH) > when_calendar.get(Calendar.DAY_OF_MONTH)) {
-	      return true;
-	    }
-
-	    if (this.get(Calendar.DAY_OF_MONTH) < when_calendar.get(Calendar.DAY_OF_MONTH)) {
-	      return false;
-	    }
-
-	    if (this.get(Calendar.HOUR) > when_calendar.get(Calendar.HOUR)) {
-	      return true;
-	    }
-
-	    if (this.get(Calendar.HOUR) < when_calendar.get(Calendar.HOUR)) {
-	      return false;
-	    }
-
-	    if (this.get(Calendar.MINUTE) > when_calendar.get(Calendar.MINUTE)) {
-	      return true;
-	    }
-
-	    if (this.get(Calendar.MINUTE) < when_calendar.get(Calendar.MINUTE)) {
-	      return false;
-	    }
-
-	    if (this.get(Calendar.SECOND) > when_calendar.get(Calendar.SECOND)) {
-	      return true;
-	    }
-
-	    if (this.get(Calendar.SECOND) < when_calendar.get(Calendar.SECOND)) {
-	      return false;
-	    }
-
-	    if (this.get(Calendar.MILLISECOND) > when_calendar.get(Calendar.MILLISECOND)) {
-	      return true;
-	    }
-
-	    if (this.get(Calendar.MILLISECOND) < when_calendar.get(Calendar.MILLISECOND)) {
-	      return false;
-	    }
-	    
-
-        System.out.println(">> super.compareTo() is " +super.compareTo((Calendar) when));
-        System.out.println(">> super.equals() is " + super.equals((Calendar) when));
-        System.out.println(">> super.before() is " + super.before(when));
-        System.out.println(">> super.after() is " + super.after(when));
+		
+        GregorianCalendar this_calendar = convertCalendarToGregorian(this);
+        GregorianCalendar when_calendar = convertCalendarToGregorian((Calendar) when);
         
-		if (super.compareTo(when_calendar) == 0) {
+        int compareResult = this_calendar.compareTo(when_calendar);
+
+		if (compareResult == 0) {
 			//System.out.println("lala");
 			return true;
 		}
-		return super.after(when);
+		return compareResult > 0;
+	}
+	
+	/**
+	 * Given a calendar, convert it to Gregorian by copying the timezone, year, month, ..., millisecond
+	 * attributes.
+	 */
+	private GregorianCalendar convertCalendarToGregorian(Calendar anotherCalendar) {
+		GregorianCalendar gregorianCalendar = new GregorianCalendar();
+		gregorianCalendar.setTimeZone(anotherCalendar.getTimeZone());
+		gregorianCalendar.set(GregorianCalendar.YEAR, anotherCalendar.get(Calendar.YEAR));
+		gregorianCalendar.set(GregorianCalendar.MONTH, anotherCalendar.get(Calendar.MONTH));
+		gregorianCalendar.set(GregorianCalendar.DAY_OF_MONTH, anotherCalendar.get(Calendar.DAY_OF_MONTH));
+		gregorianCalendar.set(GregorianCalendar.HOUR, anotherCalendar.get(Calendar.HOUR));
+		gregorianCalendar.set(GregorianCalendar.MINUTE, anotherCalendar.get(Calendar.MINUTE));
+		gregorianCalendar.set(GregorianCalendar.SECOND, anotherCalendar.get(Calendar.SECOND));
+		gregorianCalendar.set(GregorianCalendar.MILLISECOND, anotherCalendar.get(Calendar.MILLISECOND));
+		return gregorianCalendar;
 	}
 
 	@Override
