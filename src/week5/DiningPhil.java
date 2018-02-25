@@ -37,10 +37,19 @@ class Philosopher extends Thread {
 			while (true) {
 				Thread.sleep(randomGenerator.nextInt(100)); //not sleeping but thinking
 				System.out.println("Phil " + index + " finishes thinking.");
-				left.pickup();				
-				System.out.println("Phil " + index + " picks up left fork.");
-				right.pickup();
-				System.out.println("Phil " + index + " picks up right fork.");
+
+				if (left.index < right.index) {  // pick up left fork first
+					left.pickup();				
+					System.out.println("Phil " + index + " picks up left fork.");
+					right.pickup();
+					System.out.println("Phil " + index + " picks up right fork.");
+				} else {  // pick up right fork first
+					right.pickup();
+					System.out.println("Phil " + index + " picks up right fork.");
+					left.pickup();				
+					System.out.println("Phil " + index + " picks up left fork.");
+				}
+				
 				Thread.sleep(randomGenerator.nextInt(100)); //eating
 				System.out.println("Phil " + index + " finishes eating.");
 				left.putdown();
@@ -55,7 +64,7 @@ class Philosopher extends Thread {
 }
 
 class Fork {
-	private final int index;
+	public final int index;
 	private boolean isAvailable = true;
 	
 	public Fork (int index) {

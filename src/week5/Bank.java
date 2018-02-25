@@ -1,9 +1,5 @@
 package week5;
 
-/**
- * 
- *
- */
 public class Bank {
 	public static void main(String args[]){   	
 		int numberofCustomers = 1000;
@@ -40,27 +36,21 @@ class StockMachine extends Thread {
 }
 
 class BankAccount {
-	private int saving;  // state --> guarded by "this"
+	private int saving;  // state 
 	private int investment;  // state
 	
-	//pre-condition: saving >= 0
-	//pre-condition: investment >= 0
 	public BankAccount (int saving, int investment) {
 		this.saving = saving;
 		this.investment = investment;
 	}
 	
-	//pre-condition: n >= 0
-	//post-condition: saving >= 0
 	//post-condition: saving increased by n
-	public void deposit (int n) {
+	public synchronized void deposit (int n) {
 		saving += n;
 	}
 
-	//pre-condition: n >= 0
-	//post-condition: investment >= 0
 	//post-condition: saving decreased by n, investment increased by n
-	public void invest (int n) {
+	public synchronized void invest (int n) {
 			saving -= n;
 			investment += n;  // saving and investment are related variables
 	}

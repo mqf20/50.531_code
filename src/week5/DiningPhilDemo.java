@@ -37,11 +37,21 @@ class PhilosopherDemo extends Thread {
 			while (true) {
 				Thread.sleep(randomGenerator.nextInt(100)); //not sleeping but thinking
 				System.out.println("Phil " + index + " finishes thinking.");
-				left.pickup();
-				Thread.sleep(3000); //not sleeping but thinking
-				System.out.println("Phil " + index + " picks up left fork.");
-				right.pickup();
-				System.out.println("Phil " + index + " picks up right fork.");
+
+				if (left.index < right.index) {  // pick up left fork first
+					left.pickup();				
+					Thread.sleep(3000); //not sleeping but thinking
+					System.out.println("Phil " + index + " picks up left fork.");
+					right.pickup();
+					System.out.println("Phil " + index + " picks up right fork.");
+				} else {  // pick up right fork first
+					right.pickup();
+					Thread.sleep(3000); //not sleeping but thinking
+					System.out.println("Phil " + index + " picks up right fork.");
+					left.pickup();				
+					System.out.println("Phil " + index + " picks up left fork.");
+				}
+
 				Thread.sleep(randomGenerator.nextInt(100)); //eating
 				System.out.println("Phil " + index + " finishes eating.");
 				left.putdown();
