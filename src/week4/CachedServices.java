@@ -44,11 +44,11 @@ public class CachedServices {
 		return hits;
 	}
 	
-	public double getCacheHitRatio () {
+	public synchronized double getCacheHitRatio () {
 		return (double) cacheHits/ (double) hits;
 	}
 	
-	public List<Object> service (String input) {
+	public synchronized List<Object> service (String input) {
 		List<Object> results = null;
 		++hits;
 		
