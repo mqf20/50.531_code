@@ -40,7 +40,7 @@ public class CachedServices {
 	private long hits;
 	private long cacheHits;
 	
-	public long getHits () {
+	public synchronized long getHits () {
 		return hits;
 	}
 	
