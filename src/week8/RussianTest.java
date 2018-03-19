@@ -28,7 +28,13 @@ public class RussianTest {
 	
 	@Test
 	public void testWhiteBox2() {
-		assertEquals(5, Russian.multiply(5, 2));  // enter while loop
+		assertEquals(5, Russian.multiply(5, 1));  // enter while loop and if branch
+	}
+
+	@Test
+	public void testWhiteBox3() {
+		assertEquals(10, Russian.multiply(5, 2));  // enter while loop, skip if branch once then enter 
+												  // if branch in second loop
 	}
 	
 	@Test
