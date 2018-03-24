@@ -3,9 +3,10 @@ package week9;
 import java.util.Random;
 
 public class ModifiedAlgorithm {
-    
+
     /* Guided algorithm parameters */
     private static final char[] PREFIX = "http://".toCharArray();
+    private static final int MAX_DIVIDERS = 5;  // at most 5 dividers or "."
 
     /* GA parameters */
     private static final double uniformRate = 0.5;
@@ -14,8 +15,8 @@ public class ModifiedAlgorithm {
     private static final boolean elitism = true;
 
     /* Public methods */
-    
-    // Evolve a population
+
+    // Evolve a population to generate strings that match the format "http://*.*.*.*.*.*"
     public static Population evolvePopulation(Population pop) {
         Population newPopulation = new Population(pop.size(), false);
 
@@ -48,42 +49,54 @@ public class ModifiedAlgorithm {
         return newPopulation;
     }
 
-    // Crossover individuals
+    // Crossover individuals and match the format "http://*.*.*.*.*.*"
     private static Individual crossover(Individual indiv1, Individual indiv2) {
         Individual newSol = new Individual();
-        // Loop through genes
+        // prefix is constant
         for (int i = 0; i < PREFIX.length; i++) {
             newSol.setGene(i, PREFIX[i]);
         }
+        // Crossover at least once
         for (int i = PREFIX.length; i < indiv1.size(); i++) {
-            // Crossover
             if (Math.random() <= uniformRate) {
                 newSol.setGene(i, indiv1.getGene(i));
             } else {
                 newSol.setGene(i, indiv2.getGene(i));
             }
         }
+        while (!isEligible(newSol)) {
+            for (int i = PREFIX.length; i < indiv1.size(); i++) {
+                if (Math.random() <= uniformRate) {
+                    newSol.setGene(i, indiv1.getGene(i));
+                } else {
+                    newSol.setGene(i, indiv2.getGene(i));
+                }
+            }
+        }
         return newSol;
     }
 
-    // Mutate an individual
-    // TODO : modify this
+    // Mutate an individual (modified)
     private static void mutate(Individual indiv) {
-        // Loop through genes
-        for (int i = 0; i < PREFIX.length; i++) {
-            indiv.setGene(i, PREFIX[i]);
-        }
         for (int i = PREFIX.length; i < indiv.size(); i++) {
             if (Math.random() <= mutationRate) {
-                // Create random gene
-                
                 Random r = new Random();
-                char c = (char)(r.nextInt(95) + 32);
+                char c = (char) (r.nextInt(95) + 32);
                 indiv.setGene(i, c);
             }
         }
+        while (!isEligible(indiv)) {
+            // mutate genes after prefix
+            for (int i = PREFIX.length; i < indiv.size(); i++) {
+                if (Math.random() <= mutationRate) {
+                    Random r = new Random();
+                    char c = (char) (r.nextInt(95) + 32);
+                    indiv.setGene(i, c);
+                }
+            }
+        }
     }
-
+    
     // Select individuals for crossover
     private static Individual tournamentSelection(Population pop) {
         // Create a tournament population
@@ -97,4 +110,40 @@ public class ModifiedAlgorithm {
         Individual fittest = tournament.getFittest();
         return fittest;
     }
+    
+    // Check if a string matches the format of "*.*.*.*.*.*" (we have ignored the prefix)
+    private static boolean isEligible(Individual indiv) {
+        int dividerCount = 0;
+        int lastDividerIndex = 0;
+        for (int i = PREFIX.length; i < indiv.size(); i++) {
+            if (indiv.getGene(i) == '.') {
+                dividerCount++;
+                lastDividerIndex = i;
+            }
+        }
+        if (dividerCount > MAX_DIVIDERS) {
+            return false;
+        }
+        // no dots allowed before last divider
+        if (dividerCount > 1) {
+            for (int i = 0; i < lastDividerIndex; i++) {
+                if (indiv.getGene(i) == ' ') {
+                    return false;
+                }
+            }
+        }
+        boolean terminated = false;
+        for (int i = lastDividerIndex; i < indiv.size(); i++) {  
+            // must include lastDividerIndex (in case there are no dividers)
+            if (indiv.getGene(i) == ' ') {
+                if (!terminated) {
+                    terminated = true;
+                }
+            } else if (terminated) {  // already terminated; should have no more non-whitespace characters
+                return false;
+            }
+        }
+        return true;  // all tests passed
+    }
+
 }
