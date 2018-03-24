@@ -3,6 +3,9 @@ package week9;
 import java.util.Random;
 
 public class ModifiedAlgorithm {
+    
+    /* Guided algorithm parameters */
+    private static final char[] PREFIX = "http://".toCharArray();
 
     /* GA parameters */
     private static final double uniformRate = 0.5;
@@ -49,7 +52,10 @@ public class ModifiedAlgorithm {
     private static Individual crossover(Individual indiv1, Individual indiv2) {
         Individual newSol = new Individual();
         // Loop through genes
-        for (int i = 0; i < indiv1.size(); i++) {
+        for (int i = 0; i < PREFIX.length; i++) {
+            newSol.setGene(i, PREFIX[i]);
+        }
+        for (int i = PREFIX.length; i < indiv1.size(); i++) {
             // Crossover
             if (Math.random() <= uniformRate) {
                 newSol.setGene(i, indiv1.getGene(i));
@@ -61,12 +67,16 @@ public class ModifiedAlgorithm {
     }
 
     // Mutate an individual
+    // TODO : modify this
     private static void mutate(Individual indiv) {
         // Loop through genes
-        for (int i = 0; i < indiv.size(); i++) {
+        for (int i = 0; i < PREFIX.length; i++) {
+            indiv.setGene(i, PREFIX[i]);
+        }
+        for (int i = PREFIX.length; i < indiv.size(); i++) {
             if (Math.random() <= mutationRate) {
-                
                 // Create random gene
+                
                 Random r = new Random();
                 char c = (char)(r.nextInt(95) + 32);
                 indiv.setGene(i, c);
